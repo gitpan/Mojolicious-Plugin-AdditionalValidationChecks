@@ -23,7 +23,7 @@ my %WriteMakefileArgs = (
     "Email::Valid" => "1.192",
     "Mojolicious" => "5.42"
   },
-  "VERSION" => "0.01",
+  "VERSION" => "0.02",
   "test" => {
     "TESTS" => "t/*.t"
   }

@@ -11,4 +11,5 @@ t/email.t
 t/int.t
 t/max.t
 t/min.t
+t/phone.t
 t/url.t
