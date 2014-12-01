@@ -1,7 +1,7 @@
 package Mojolicious::Plugin::AdditionalValidationChecks;
 use Mojo::Base 'Mojolicious::Plugin';
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 use Email::Valid;
 use Scalar::Util qw(looks_like_number);
@@ -51,6 +51,12 @@ sub register {
     });
 
     $validator->add_check( length => sub {
+        my ($self, $field, $value, $min, $max) = @_;
+
+        my $length = length $value;
+        return 0 if $length >= $min and !$max;
+        return 0 if $length >= $min and $length <= $max;
+        return 1;
     });
 
     $validator->add_check( http_url => sub {
@@ -76,7 +82,7 @@ Mojolicious::Plugin::AdditionalValidationChecks
 
 =head1 VERSION
 
-version 0.02
+version 0.03
 
 =head1 SYNOPSIS
 
@@ -157,7 +163,14 @@ Checks a number for a maximum value. If a non-number is passed, it's always inva
 
 =head2 length
 
-*not implemented yet*
+In contrast to the C<size> "built-in", this check also allows to
+omit the maximum length.
+
+  my $validation = $self->validation;
+  $validation->input({ word => 'abcde' });
+  $validation->required( 'word' )->length( 2, 5 ); # valid
+  $validation->required( 'word' )->length( 2 );  # valid
+  $validation->required( 'word' )->length( 8, 10 ); # not valid
 
 =head2 int
 
@@ -184,6 +197,11 @@ Checks if a given string is an B<absolute> URL with I<http> or I<https> scheme.
   $validation->required( 'url' )->http_url(); # not valid
   $validation->input({ url => 'mailto:dummy@example.com' });
   $validation->required( 'url' )->http_url(); # not valid
+
+=head1 MORE COMMON CHECKS?
+
+If you know some commonly used checks, please add an issue at
+L<https://github.com/reneeb/Mojolicious-Plugin-AdditionalValidationChecks/issues>.
 
 =head1 SEE ALSO
 
