@@ -12,5 +12,6 @@ t/int.t
 t/length.t
 t/max.t
 t/min.t
+t/not.t
 t/phone.t
 t/url.t

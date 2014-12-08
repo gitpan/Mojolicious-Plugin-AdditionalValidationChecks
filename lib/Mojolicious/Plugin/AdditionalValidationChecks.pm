@@ -1,7 +1,7 @@
 package Mojolicious::Plugin::AdditionalValidationChecks;
 use Mojo::Base 'Mojolicious::Plugin';
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 use Email::Valid;
 use Scalar::Util qw(looks_like_number);
@@ -66,6 +66,21 @@ sub register {
         return 1 if !grep{ $url->scheme eq $_ }qw(http https);
         return 0;
     });
+
+    $validator->add_check( not => sub {
+        my ($validation, @tmp) = (shift, shift, shift);
+        return 0 if !@_;
+
+        my $field = $validation->topic;
+        $validation->in( @_ );
+
+        if ( $validation->has_error($field) ) {
+            delete $validation->{error}->{$field};
+            return 0;
+        }
+
+        return 1;
+    });
 }
 
 1;
@@ -82,7 +97,7 @@ Mojolicious::Plugin::AdditionalValidationChecks
 
 =head1 VERSION
 
-version 0.03
+version 0.04
 
 =head1 SYNOPSIS
 
@@ -197,6 +212,17 @@ Checks if a given string is an B<absolute> URL with I<http> or I<https> scheme.
   $validation->required( 'url' )->http_url(); # not valid
   $validation->input({ url => 'mailto:dummy@example.com' });
   $validation->required( 'url' )->http_url(); # not valid
+
+=head2 not
+
+The opposite of C<in>.
+
+  my $validation = $self->validation;
+  $validation->input({ id => '3' });
+  $validation->required( 'id' )->not( 2, 5 ); # valid
+  $validation->required( 'id' )->not( 2 );  # valid
+  $validation->required( 'id' )->not( 3, 8, 10 ); # not valid
+  $validation->required( 'id' )->not( 3 );  # not valid
 
 =head1 MORE COMMON CHECKS?
 
