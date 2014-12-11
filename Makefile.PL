@@ -21,9 +21,10 @@ my %WriteMakefileArgs = (
   "NAME" => "Mojolicious::Plugin::AdditionalValidationChecks",
   "PREREQ_PM" => {
     "Email::Valid" => "1.192",
-    "Mojolicious" => "5.42"
+    "Mojolicious" => "5.42",
+    "Net::Domain::TLD" => 0
   },
-  "VERSION" => "0.04",
+  "VERSION" => "0.05",
   "test" => {
     "TESTS" => "t/*.t"
   }
@@ -32,7 +33,8 @@ my %WriteMakefileArgs = (
 
 my %FallbackPrereqs = (
   "Email::Valid" => "1.192",
-  "Mojolicious" => "5.42"
+  "Mojolicious" => "5.42",
+  "Net::Domain::TLD" => 0
 );
 
 
