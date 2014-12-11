@@ -1,7 +1,7 @@
 package Mojolicious::Plugin::AdditionalValidationChecks;
 use Mojo::Base 'Mojolicious::Plugin';
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 use Email::Valid;
 use Scalar::Util qw(looks_like_number);
@@ -81,6 +81,66 @@ sub register {
 
         return 1;
     });
+
+    $validator->add_check( color => sub {
+        my ($validation, $field, $value, $type) = @_;
+
+        return 1 if !defined $value;
+
+        state $rgb_int = qr{
+            \s* (?: 25[0-5] | 2[0-4][0-9] | 1[0-9][0-9] | [1-9][0-9] | [0-9] )
+        }x;
+
+        state $rgb_percent = qr{
+            \s* (?: 100 | [1-9][0-] | [0-9] ) \%
+        }x;
+
+        state $alpha = qr{
+            \s* (?: (?: 0 (?:\.[0-9]+)? )| (?: 1 (?:\.0)? ) )
+        }x;
+
+        state $types = {
+            rgb  => qr{
+                \A
+                    rgb\(
+                        (?:
+                            (?:
+                                (?:$rgb_int,){2} $rgb_int
+                            ) |
+                            (?:
+                                (?:$rgb_percent,){2} $rgb_percent
+                            )    
+                        )    
+                    \)
+                \z
+            }x,
+            rgba  => qr{
+                \A
+                    rgba\(
+                        (?:
+                            (?:
+                                (?:$rgb_int,){3} $alpha
+                            ) |
+                            (?:
+                                (?:$rgb_percent,){3} $alpha
+                            )    
+                        )    
+                    \)
+                \z
+            }xms,
+            hex  => qr{
+                \A
+                    \#
+                    (?: (?:[0-9A-Fa-f]){3} ){1,2}
+                \z
+            }xms,
+        };
+
+        return 1 if !$types->{$type};
+
+        my $found = $value =~ $types->{$type};
+        return !$found;
+    });
 }
 
 1;
@@ -97,7 +157,7 @@ Mojolicious::Plugin::AdditionalValidationChecks
 
 =head1 VERSION
 
-version 0.05
+version 0.06
 
 =head1 SYNOPSIS
 
@@ -223,6 +283,49 @@ The opposite of C<in>.
   $validation->required( 'id' )->not( 2 );  # valid
   $validation->required( 'id' )->not( 3, 8, 10 ); # not valid
   $validation->required( 'id' )->not( 3 );  # not valid
+
+=head2 color
+
+Checks if the given value is a "color". There are three flavours of
+colors:
+
+=over 4
+
+=item * rgb
+
+  my $validation = $self->validation;
+  $validation->input({ color => 'rgb(11,22,33)' });
+  $validation->required( 'color' )->color( 'rgb' ); # valid
+  $validation->input({ color => 'rgb(11, 22, 33)' });
+  $validation->required( 'color' )->color( 'rgb' ); # valid
+  $validation->input({ color => 'rgb(11%,22%,33%)' });
+  $validation->required( 'color' )->color( 'rgb' ); # valid
+  $validation->input({ color => 'rgb(11%, 22%, 33%)' });
+  $validation->required( 'color' )->color( 'rgb' ); # valid
+
+=item * rgba
+
+  my $validation = $self->validation;
+  $validation->input({ color => 'rgba(11,22,33,0)' });
+  $validation->required( 'color' )->color( 'rgba' ); # valid
+  $validation->input({ color => 'rgb(11, 22, 33,0.0)' });
+  $validation->required( 'color' )->color( 'rgba' ); # valid
+  $validation->input({ color => 'rgb(11, 22, 33,0.6)' });
+  $validation->required( 'color' )->color( 'rgba' ); # valid
+  $validation->input({ color => 'rgb(11%,22%,33%, 1)' });
+  $validation->required( 'color' )->color( 'rgba' ); # valid
+  $validation->input({ color => 'rgb(11%, 22%, 33%, 1.0)' });
+  $validation->required( 'color' )->color( 'rgba' ); # valid
+
+=item * hex
+
+  my $validation = $self->validation;
+  $validation->input({ color => '#afe' });
+  $validation->required( 'color' )->color( 'hex' ); # valid
+  $validation->input({ color => '#affe12' });
+  $validation->required( 'color' )->color( 'hex' ); # valid
+
+=back
 
 =head1 MORE COMMON CHECKS?
 

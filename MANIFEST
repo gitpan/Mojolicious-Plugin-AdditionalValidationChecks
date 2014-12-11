@@ -7,6 +7,12 @@ Makefile.PL
 README
 dist.ini
 lib/Mojolicious/Plugin/AdditionalValidationChecks.pm
+t/color.t
+t/color_hex.t
+t/color_rgb_int.t
+t/color_rgb_percent.t
+t/color_rgba_int.t
+t/color_rgba_percent.t
 t/email.t
 t/int.t
 t/length.t
