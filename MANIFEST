@@ -21,3 +21,7 @@ t/min.t
 t/not.t
 t/phone.t
 t/url.t
+t/uuid.t
+t/uuid_3.t
+t/uuid_4.t
+t/uuid_5.t
