@@ -14,6 +14,8 @@ t/color_rgb_percent.t
 t/color_rgba_int.t
 t/color_rgba_percent.t
 t/email.t
+t/float.t
+t/hex.t
 t/int.t
 t/length.t
 t/max.t

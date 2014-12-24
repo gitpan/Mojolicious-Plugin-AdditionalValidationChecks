@@ -1,7 +1,7 @@
 package Mojolicious::Plugin::AdditionalValidationChecks;
 use Mojo::Base 'Mojolicious::Plugin';
 
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 
 use Email::Valid;
 use Scalar::Util qw(looks_like_number);
@@ -159,6 +159,38 @@ sub register {
 
         return $value !~ $regex;
     });
+
+    $validator->add_check( hex => sub {
+        my ($validation, $field, $value, $type) = @_;
+
+        return 1 if !defined $value;
+
+        return $value !~ m{\A [0-9A-Fa-f]+ \z}xms;
+    });
+
+    $validator->add_check( float => sub {
+        my ($validation, $field, $value, $type) = @_;
+
+        return 1 if !defined $value;
+
+        return $value !~ m{
+            \A
+                (?:
+                    [+-]?
+                    (?:[0-9]+)
+                )?
+                (?:
+                    \.
+                    [0-9]*
+                )
+                (?:
+                    [eE]
+                    [\+\-]?
+                    (?:[0-9]+)
+                )?
+            \z
+        }xms;
+    });
 }
 
 1;
@@ -175,7 +207,7 @@ Mojolicious::Plugin::AdditionalValidationChecks
 
 =head1 VERSION
 
-version 0.07
+version 0.08
 
 =head1 SYNOPSIS
 
@@ -380,6 +412,34 @@ This is the default variant
   $validation->required( 'uuid' )->uuid( 5 ); # valid
 
 =back
+
+=head2 hex
+
+  my $validation = $self->validation;
+  $validation->input({ hex => 'afe' });
+  $validation->required( 'hex' )->hex(); # valid
+  $validation->input({ hex => 'affe12' });
+  $validation->required( 'hex' )->hex(); # valid
+
+=head2 float
+
+  my $validation = $self->validation;
+  $validation->input({ float => '.31' });
+  $validation->required( 'float' )->float(); # valid
+  $validation->input({ float => '+3.123' });
+  $validation->required( 'float' )->float(); # valid
+  $validation->input({ float => '-3.123' });
+  $validation->required( 'float' )->float(); # valid
+  $validation->input({ float => '0.123' });
+  $validation->required( 'float' )->float(); # valid
+  $validation->input({ float => '0.123e1' });
+  $validation->required( 'float' )->float(); # valid
+  $validation->input({ float => '0.123E-13' });
+  $validation->required( 'float' )->float(); # valid
+
+=head1 ACKNOWLEDGEMENT
+
+Some checks are inspired by L<https://github.com/chriso/validator.js>
 
 =head1 MORE COMMON CHECKS?
 
