@@ -17,6 +17,7 @@ t/email.t
 t/float.t
 t/hex.t
 t/int.t
+t/ip.t
 t/length.t
 t/max.t
 t/min.t
