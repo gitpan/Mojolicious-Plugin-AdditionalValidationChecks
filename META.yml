@@ -20,4 +20,4 @@ resources:
   bugtracker: http://github.com/reneeb/Mojolicious-Plugin-AdditionalValidationChecks/issues
   homepage: http://github.com/reneeb/Mojolicious-Plugin-AdditionalValidationChecks
   repository: http://github.com/reneeb/Mojolicious-Plugin-AdditionalValidationChecks.git
-version: '0.09'
+version: '0.10'

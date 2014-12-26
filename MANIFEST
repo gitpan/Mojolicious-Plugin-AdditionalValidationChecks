@@ -18,6 +18,8 @@ t/float.t
 t/hex.t
 t/int.t
 t/ip.t
+t/ipv4.t
+t/ipv6.t
 t/length.t
 t/max.t
 t/min.t

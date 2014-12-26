@@ -1,7 +1,7 @@
 package Mojolicious::Plugin::AdditionalValidationChecks;
 use Mojo::Base 'Mojolicious::Plugin';
 
-our $VERSION = '0.09';
+our $VERSION = '0.10';
 
 use Email::Valid;
 use Scalar::Util qw(looks_like_number);
@@ -203,8 +203,27 @@ sub register {
             (?: 25[0-5] | 2[0-4][0-9] | 1[0-9][0-9] | [1-9][0-9] | [0-9] )
         }xms;
 
+        my $ipv4 = "((25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2})[.](25[0-5]|2[0-4][0-9]|[0-1]?[0-9]{1,2}))";
+        my $g    = "[0-9a-fA-F]{1,4}";
+        
+        my @tail = (
+            ":",
+            "(:($g)?|$ipv4)",
+            ":($ipv4|$g(:$g)?|)",
+            "(:$ipv4|:$g(:$ipv4|(:$g){0,2})|:)",
+            "((:$g){0,2}(:$ipv4|(:$g){1,2})|:)",
+            "((:$g){0,3}(:$ipv4|(:$g){1,2})|:)",
+            "((:$g){0,4}(:$ipv4|(:$g){1,2})|:)",
+        );
+        
+        my $ipv6 = $g;
+        $ipv6 = "$g:($ipv6|$_)" for @tail;
+        $ipv6 = qq/:(:$g){0,5}((:$g){1,2}|:$ipv4)|$ipv6/;
+        $ipv6 =~ s/\(/(?:/g;
+
         my %regexes = (
             4 => qr/\A (?: $octett \. ){3} $octett \z/xms,
+            6 => qr/\A$ipv6\z/,
         );
 
         my $regex = $regexes{$type} || $regexes{4};
@@ -227,7 +246,7 @@ Mojolicious::Plugin::AdditionalValidationChecks
 
 =head1 VERSION
 
-version 0.09
+version 0.10
 
 =head1 SYNOPSIS
 
