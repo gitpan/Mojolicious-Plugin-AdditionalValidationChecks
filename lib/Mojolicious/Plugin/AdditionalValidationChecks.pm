@@ -1,7 +1,7 @@
 package Mojolicious::Plugin::AdditionalValidationChecks;
 use Mojo::Base 'Mojolicious::Plugin';
 
-our $VERSION = '0.11';
+our $VERSION = '0.12';
 
 use Email::Valid;
 use Scalar::Util qw(looks_like_number);
@@ -169,7 +169,7 @@ sub register {
     });
 
     $validator->add_check( float => sub {
-        my ($validation, $field, $value, $type) = @_;
+        my ($validation, $field, $value) = @_;
 
         return 1 if !defined $value;
 
@@ -248,6 +248,27 @@ sub register {
         return $result;
     });
 
+    $validator->add_check( number => sub {
+        my ($validation, @tmp) = (shift, shift, shift);
+
+        return 1 if !looks_like_number( $tmp[1] );
+
+        my $field = $validation->topic;
+        $validation->int( @_ );
+
+        return 0 if !$validation->has_error($field);
+
+        delete $validation->{error}->{$field};
+
+        $validation->float( @_ );
+
+        return 0 if !$validation->has_error($field);
+
+        delete $validation->{error}->{$field};
+ 
+        return 1;
+    });
+
 }
 
 1;
@@ -264,7 +285,7 @@ Mojolicious::Plugin::AdditionalValidationChecks
 
 =head1 VERSION
 
-version 0.11
+version 0.12
 
 =head1 SYNOPSIS
 

@@ -25,6 +25,7 @@ t/length.t
 t/max.t
 t/min.t
 t/not.t
+t/number.t
 t/phone.t
 t/url.t
 t/uuid.t
