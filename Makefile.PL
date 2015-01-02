@@ -23,9 +23,10 @@ my %WriteMakefileArgs = (
     "Email::Valid" => "1.192",
     "Mojolicious" => "5.42",
     "Net::Domain::TLD" => 0,
-    "Scalar::Util" => 0
+    "Scalar::Util" => 0,
+    "Time::Piece" => 0
   },
-  "VERSION" => "0.12",
+  "VERSION" => "0.13",
   "test" => {
     "TESTS" => "t/*.t"
   }
@@ -36,7 +37,8 @@ my %FallbackPrereqs = (
   "Email::Valid" => "1.192",
   "Mojolicious" => "5.42",
   "Net::Domain::TLD" => 0,
-  "Scalar::Util" => 0
+  "Scalar::Util" => 0,
+  "Time::Piece" => 0
 );
 
 

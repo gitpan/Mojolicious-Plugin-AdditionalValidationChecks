@@ -17,8 +17,9 @@ requires:
   Mojolicious: '5.42'
   Net::Domain::TLD: '0'
   Scalar::Util: '0'
+  Time::Piece: '0'
 resources:
   bugtracker: http://github.com/reneeb/Mojolicious-Plugin-AdditionalValidationChecks/issues
   homepage: http://github.com/reneeb/Mojolicious-Plugin-AdditionalValidationChecks
   repository: http://github.com/reneeb/Mojolicious-Plugin-AdditionalValidationChecks.git
-version: '0.12'
+version: '0.13'
